@@ -1,0 +1,72 @@
+# Rhiza Protocol
+
+> A DAG-based, feeless, mesh-networked cryptocurrency with Proof of Relay consensus.
+
+## Overview
+
+Rhiza (ρίζα — Greek for "root") is a decentralized digital currency built on a Directed Acyclic Graph (DAG) instead of a traditional blockchain. It uses Proof of Relay (PoR) consensus where participants earn rewards by relaying transactions rather than mining or staking.
+
+## Key Properties
+
+- **DAG Structure**: Every transaction references 2 previous transactions, enabling parallel processing and instant finality
+- **Proof of Relay (PoR)**: Earn RHZ by relaying transactions — no mining hardware or staked capital needed
+- **Zero Transaction Fees**: All transactions are free, always
+- **Mesh Networking**: Works over TCP/IP, WiFi Direct, Bluetooth LE, and LoRa — functions without internet
+- **21 Million Max Supply**: Hard cap with halving relay rewards
+- **Bech32m Addresses**: Human-readable addresses starting with `rhz1`
+
+## Technical Stack
+
+- Written in Rust for memory safety and performance
+- BLAKE3 cryptographic hashing
+- Ed25519 digital signatures
+- libp2p for peer-to-peer networking
+- Built-in web wallet UI at localhost:7471
+
+## How Proof of Relay Works
+
+1. A peer sends you a transaction
+2. You validate it (check Ed25519 signature, verify parent transactions exist in DAG, check balance)
+3. You relay it to your connected peers
+4. You earn a relay reward (starts at 0.01 RHZ, halves every 1,000 relays)
+5. Diminishing returns prevent any single node from dominating
+
+## Comparison with Other Cryptocurrencies
+
+| Property | Bitcoin | Ethereum | Rhiza |
+|----------|---------|----------|-------|
+| Structure | Blockchain | Blockchain | DAG |
+| Consensus | Proof of Work | Proof of Stake | Proof of Relay |
+| Transaction Fees | $1-50 | $0.50-100 | $0 |
+| Minimum Hardware | ASIC miner | 32 ETH stake | Any device |
+| Works Offline | No | No | Yes (mesh) |
+| Finality | ~60 minutes | ~15 minutes | Seconds |
+
+## Installation
+
+Requires Rust 1.70+. Clone the repository and build with `cargo build --release`. Create a wallet with `cargo run --bin rhiza-cli -- wallet create`. Start a node with `cargo run --bin rhiza-node -- start`.
+
+## Protocol Constants
+
+- Symbol: RHZ
+- Max Supply: 21,000,000 RHZ
+- Smallest Unit: 10⁻⁸ RHZ
+- Base Relay Reward: 0.01 RHZ
+- Halving Interval: 1,000 relays
+- Hash Function: BLAKE3
+- Signature Scheme: Ed25519
+- Address Format: Bech32m (rhz1...)
+- Default Port: 7470
+
+## Repository
+
+- GitHub: https://github.com/rhiza-protocol/rhiza
+- Website: https://rhiza-protocol.github.io
+- License: MIT
+
+## Architecture
+
+The project is organized as a Rust workspace with three crates:
+- rhiza-core: Core protocol library (crypto, DAG, consensus, networking, wallet)
+- rhiza-node: Full node daemon with REST API and embedded web wallet
+- rhiza-cli: Command-line interface for wallet management

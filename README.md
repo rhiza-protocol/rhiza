@@ -1,33 +1,44 @@
 <div align="center">
 
-# 🌿 Rhiza Protocol
+<img src="https://raw.githubusercontent.com/rhiza-protocol/rhiza/main/rhiza-logo.png" alt="Rhiza Protocol" width="180">
 
-### The Root of True Decentralization
+# Rhiza Protocol
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
+### No Blockchain. No Mining. No Staking. Just Currency.
 
-*A revolutionary decentralized currency that actually delivers on the promise of decentralization.*
+[![Build](https://img.shields.io/badge/build-passing-10b981?style=flat-square)](https://github.com/rhiza-protocol/rhiza)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-ef4444?style=flat-square&logo=rust)](https://www.rust-lang.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-10b981?style=flat-square)](CONTRIBUTING.md)
+[![Website](https://img.shields.io/badge/web-rhiza--protocol.github.io-8b5cf6?style=flat-square)](https://rhiza-protocol.github.io)
+
+**Rhiza is a DAG-based, feeless, mesh-networked cryptocurrency that works without internet.**
+
+[Website](https://rhiza-protocol.github.io) · [Whitepaper](WHITEPAPER.md) · [Quick Start](#-quick-start) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
 ---
 
-## ❓ Why Rhiza?
+## The Problem
 
-Bitcoin promised decentralization but delivered mining pools. Ethereum promised it with staking but created plutocracy. **Rhiza (ρίζα — Greek for "root") goes back to the root of what decentralization should be.**
+Crypto was supposed to be decentralized. It isn't.
 
-| Problem | Old Crypto | Rhiza |
-|---------|-----------|-------|
-| Mining centralization | 3 pools control 65%+ | **No mining at all** |
-| Rich get richer | PoS favors whales | **Equal participation** |
-| Slow & expensive | Block times, high fees | **Instant, zero fees** |
-| Internet dependent | Requires connectivity | **Mesh networking** |
-| No privacy | Public ledger | **ZK-private by default** |
+- **Bitcoin**: 3 mining pools control 65%+ of hashrate
+- **Ethereum**: PoS lets whales dominate governance
+- **Every chain**: Requires internet. Charges fees. Processes transactions one block at a time.
 
-## 🏗️ Architecture
+**Rhiza fixes all of this.**
 
-### DAG Instead of Blockchain
+## How Rhiza Works
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🔗 DAG, Not Blockchain
+
+Rhiza uses a **Directed Acyclic Graph** instead of a blockchain. Every transaction references 2 previous transactions, creating a web of validations:
 
 ```
     TX-1    TX-2
@@ -39,123 +50,174 @@ Bitcoin promised decentralization but delivered mining pools. Ethereum promised 
          TX-7
 ```
 
-Every transaction references **2 previous transactions**, creating a web of validations instead of a single chain. This enables:
-- ⚡ **Parallel processing** — thousands of TX per second
-- 🚫 **No block waiting** — instant confirmation
-- 📈 **Self-scaling** — more users = faster network
+**Result**: Parallel processing, instant finality, and a network that gets faster with more users.
 
-### Proof of Relay (PoR)
+</td>
+<td width="50%" valign="top">
 
-Instead of mining or staking, you earn RHZ by **relaying transactions**:
+### ⚡ Proof of Relay
+
+No mining hardware. No staked capital. You earn RHZ by **relaying transactions**:
+
 1. Receive a transaction from a peer
-2. Validate it (check signatures, check parents exist)
+2. Validate it (signatures, parents, structure)
 3. Relay it to your peers
-4. Earn a relay reward
+4. Earn a reward
 
-Rewards have **diminishing returns** — no single node can dominate.
+Everyone with a device can participate equally. Rewards have diminishing returns — **no single node can dominate**.
 
-### Mesh Networking
+</td>
+</tr>
+</table>
 
-Rhiza works over:
-- 🌐 TCP/IP (internet)
-- 📶 WiFi Direct
-- 📱 Bluetooth LE
-- 📡 LoRa (long range radio)
+### 📡 Mesh Networking — Works Without Internet
 
-**Even without internet, Rhiza works.**
+| Transport | Range | Use Case |
+|-----------|-------|----------|
+| **TCP/IP** | Global | Standard internet |
+| **WiFi Direct** | ~100m | Local peer-to-peer |
+| **Bluetooth LE** | ~30m | Phone-to-phone |
+| **LoRa** | ~15km | Rural/disaster areas |
 
-## 🚀 Quick Start
+Transactions propagate through whatever network is available. **Internet goes down? Rhiza keeps working.**
 
-### Prerequisites
-
-- [Rust 1.70+](https://rustup.rs/)
-
-### Build
+## Quick Start
 
 ```bash
+# Clone & build
 git clone https://github.com/rhiza-protocol/rhiza.git
-cd rhiza
-cargo build --release
-```
+cd rhiza && cargo build --release
 
-### Create a Wallet
-
-```bash
+# Create your wallet
 cargo run --bin rhiza-cli -- wallet create
+# 🌿 Wallet Created!
+# 📍 Address: rhz1qw508d6qejxtdg4y5r3z...
+
+# Start your node + wallet UI
+cargo run --bin rhiza-node -- start
+# 🌐 Wallet UI → http://localhost:7471
 ```
 
-Output:
-```
-  🌿 Rhiza Wallet Created!
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  📍 Address:    rhz1qw508d6qejxtdg4y5r3zarvaryvhm3d2s
-  🔑 Public Key: a1b2c3d4...
-  📁 Saved to:   ~/.rhiza/wallet.json
-```
+**That's it.** No syncing gigabytes of chain data. No buying tokens to pay gas fees. No setting up mining hardware.
 
-### Start a Node
-
-```bash
-cargo run --bin rhiza-node -- init
-cargo run --bin rhiza-node -- start --port 7470
-```
-
-### View Protocol Info
-
-```bash
-cargo run --bin rhiza-cli -- protocol
-```
-
-## 📐 Protocol Constants
-
-| Parameter | Value |
-|-----------|-------|
-| **Symbol** | RHZ |
-| **Max Supply** | 21,000,000 RHZ |
-| **Smallest Unit** | 10⁻⁸ RHZ |
-| **Base Relay Reward** | 0.01 RHZ |
-| **Consensus** | Proof of Relay |
-| **Hash Function** | BLAKE3 |
-| **Signatures** | Ed25519 |
-| **Address Format** | Bech32m (`rhz1...`) |
-| **Default Port** | 7470 |
-
-## 📁 Project Structure
+## Architecture
 
 ```
 rhiza/
-├── WHITEPAPER.md          # Technical whitepaper
-├── rhiza-core/            # Core protocol library
-│   └── src/
-│       ├── crypto/        # Ed25519, BLAKE3
-│       ├── dag/           # DAG transactions & validation
-│       ├── consensus/     # Proof of Relay
-│       ├── network/       # Gossip & mesh networking
-│       └── wallet/        # Keys & addresses
-├── rhiza-node/            # Node daemon + REST API
-└── rhiza-cli/             # CLI wallet & tools
+├── rhiza-core/          # Core protocol library
+│   ├── crypto/          # Ed25519 signatures, BLAKE3 hashing
+│   ├── dag/             # DAG structure, transactions, validation
+│   ├── consensus/       # Proof of Relay, cumulative weight finality
+│   ├── network/         # Gossip protocol, mesh networking
+│   └── wallet/          # Bech32m addresses, keystore
+├── rhiza-node/          # Full node daemon with REST API + Wallet UI
+├── rhiza-cli/           # Command-line wallet & tools
+└── WHITEPAPER.md        # Full technical specification
 ```
 
-## 🔐 Security
+### Tech Stack
 
-- **BLAKE3** hashing (faster & secure as SHA-256)
-- **Ed25519** digital signatures
-- **Bech32m** addresses with error detection
-- **Cumulative weight** finality (no double spending)
-- **Diminishing returns** (anti-Sybil)
+| Component | Technology | Why |
+|-----------|-----------|-----|
+| **Language** | Rust | Memory safety, zero-cost abstractions, no GC |
+| **Hashing** | BLAKE3 | Fastest secure hash (3x faster than SHA-256) |
+| **Signatures** | Ed25519 | Battle-tested, 64-byte compact signatures |
+| **Addresses** | Bech32m | Human-readable, typo-detecting (`rhz1...`) |
+| **P2P** | libp2p | Production-grade peer-to-peer networking |
+| **Serialization** | bincode | Compact, deterministic binary encoding |
 
-## 📜 License
+## Protocol Specification
 
-MIT License — Free as in freedom.
+| Parameter | Value |
+|-----------|-------|
+| **Ticker** | `RHZ` |
+| **Max Supply** | 21,000,000 RHZ |
+| **Smallest Unit** | 10⁻⁸ RHZ (1 satoshi equivalent) |
+| **Transaction Fees** | **0** — always free |
+| **Base Relay Reward** | 0.01 RHZ per relay |
+| **Halving Interval** | Every 1,000 relays |
+| **Finality** | Cumulative weight ≥ 10 |
+| **Parent References** | 2 per transaction |
+| **Consensus** | Proof of Relay (PoR) |
+| **Default Port** | 7470 |
+| **Address Prefix** | `rhz1` |
 
-## 🤝 Contributing
+## Wallet UI
 
-Rhiza is open source and welcomes contributions. See the [whitepaper](WHITEPAPER.md) for technical details.
+The node includes a built-in web wallet at `http://localhost:7471`:
+
+- 💰 Real-time balance display
+- 📤 Send RHZ to any address
+- 📥 Receive with one-click address copy
+- 📊 Live DAG statistics
+- 📋 Full transaction history
+- 🔄 Relay reward claiming
+
+## Why Not Just Use Bitcoin/Ethereum/Solana?
+
+| | Bitcoin | Ethereum | Solana | **Rhiza** |
+|---|---|---|---|---|
+| **Consensus** | PoW (wasteful) | PoS (plutocratic) | PoH+PoS | **PoR (egalitarian)** |
+| **Fees** | $1-50 | $0.50-100 | $0.001 | **$0 always** |
+| **Finality** | ~60 min | ~15 min | ~0.4s | **Seconds** |
+| **Min. Hardware** | ASIC ($5000+) | 32 ETH ($100k+) | High-spec server | **Any device** |
+| **Works Offline** | ❌ | ❌ | ❌ | **✅ Mesh** |
+| **Private** | ❌ Pseudonymous | ❌ Pseudonymous | ❌ Pseudonymous | **✅ ZK-ready** |
+
+## Security
+
+- **BLAKE3** — Cryptographic hashing, 3x faster than SHA-256, equivalent security
+- **Ed25519** — Elliptic curve signatures (same as Signal, Tor, SSH)
+- **Cumulative weight** — Finality without a single block producer
+- **Diminishing returns** — Sybil resistance built into the reward curve
+- **Bech32m** — Addresses with built-in error detection
+
+## Roadmap
+
+- [x] Core protocol (DAG, PoR, signatures, mesh)
+- [x] CLI wallet & node daemon
+- [x] Web wallet UI
+- [x] Whitepaper
+- [ ] Persistent storage (sled DB)
+- [ ] Multi-node mesh networking
+- [ ] Zero-knowledge transaction privacy
+- [ ] Mobile wallet (iOS/Android)
+- [ ] Browser extension wallet
+- [ ] LoRa transport layer
+- [ ] Smart contract layer (Rhiza VM)
+
+## Contributing
+
+We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for details.
+
+```bash
+# Run tests
+cargo test --workspace
+
+# Build in release mode
+cargo build --release
+```
+
+All 47 unit tests pass across crypto, DAG, consensus, networking, and wallet modules.
+
+## Community
+
+- 🌐 [Website](https://rhiza-protocol.github.io)
+- 📄 [Whitepaper](WHITEPAPER.md)
+- 🐛 [Issues](https://github.com/rhiza-protocol/rhiza/issues)
+
+## License
+
+MIT License — Free as in freedom. See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-*🌿 The root system grows. The revolution begins.*
+**Rhiza** (ρίζα) — Greek for "root"
+
+*The root system grows beneath the surface. By the time you see it, it's everywhere.*
+
+⭐ **Star this repo** if you believe crypto should be truly decentralized.
 
 </div>

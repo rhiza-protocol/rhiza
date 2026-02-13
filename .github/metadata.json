@@ -1,0 +1,29 @@
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "Rhiza Protocol",
+    "description": "A DAG-based, feeless, mesh-networked cryptocurrency with Proof of Relay consensus. No mining, no staking, works without internet.",
+    "url": "https://github.com/rhiza-protocol/rhiza",
+    "codeRepository": "https://github.com/rhiza-protocol/rhiza",
+    "programmingLanguage": "Rust",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": {
+        "@type": "Organization",
+        "name": "Rhiza Protocol",
+        "url": "https://rhiza-protocol.github.io"
+    },
+    "keywords": [
+        "cryptocurrency",
+        "decentralized",
+        "DAG",
+        "directed-acyclic-graph",
+        "proof-of-relay",
+        "feeless",
+        "mesh-networking",
+        "rust",
+        "blockchain-alternative",
+        "peer-to-peer",
+        "digital-currency",
+        "open-source"
+    ]
+}
