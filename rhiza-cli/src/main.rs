@@ -101,11 +101,21 @@ fn main() -> Result<()> {
                 let keypair = keystore.to_keypair()?;
                 let address = Address::from_public_key(&keypair.public_key);
 
+                // Check if this wallet is the founder
+                let is_founder = format!("{}", keypair.public_key) == rhiza_core::FOUNDER_PUBLIC_KEY;
+                let founder_rhz = rhiza_core::FOUNDER_ALLOCATION / rhiza_core::UNITS_PER_RHZ;
+
                 println!();
                 println!("  🌿 Rhiza Wallet");
                 println!("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
                 println!("  📍 Address:    {}", address);
                 println!("  🔑 Public Key: {}", keypair.public_key);
+                if is_founder {
+                    println!();
+                    println!("  👑 Status:     FOUNDER");
+                    println!("  💰 Allocation: {} RHZ (5% genesis grant)", founder_rhz);
+                    println!("  📊 Balance:    {} RHZ", founder_rhz);
+                }
                 println!();
 
                 Ok(())
@@ -177,6 +187,10 @@ fn main() -> Result<()> {
             println!(
                 "  Parent References:    {:>15}",
                 rhiza_core::PARENT_COUNT
+            );
+            println!(
+                "  Founder Allocation:   {:>15} RHZ (5%)",
+                rhiza_core::FOUNDER_ALLOCATION / rhiza_core::UNITS_PER_RHZ
             );
             println!();
 

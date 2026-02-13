@@ -24,3 +24,11 @@ pub const BASE_RELAY_REWARD: u64 = 1_000_000;
 
 /// Relay count at which reward halves
 pub const RELAY_HALVING_INTERVAL: u64 = 1_000;
+
+/// Founder allocation: 5% of max supply (1,050,000 RHZ)
+/// This is a one-time genesis allocation to the protocol creator
+pub const FOUNDER_ALLOCATION: u64 = MAX_SUPPLY / 20;
+
+/// Founder's public key (Ed25519, hex-encoded)
+/// Address: rhz1hh8kfkldmn37t35wqqaz9t9rtrhnk4e9qlkz5z
+pub const FOUNDER_PUBLIC_KEY: &str = "cd3f2d882dd11f282e13f641b6aa751a3d46b3ff5a9efbccebea9a0131c0dfdd";

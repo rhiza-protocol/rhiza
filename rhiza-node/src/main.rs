@@ -65,10 +65,31 @@ impl NodeState {
     pub fn initialize_genesis(&mut self) {
         if self.dag.is_empty() {
             let genesis = Transaction::genesis(&self.keypair);
-            info!("Creating genesis transaction: {}", genesis.id);
+            let genesis_id = genesis.id;
+            info!("Creating genesis transaction: {}", genesis_id);
             self.dag
                 .insert(DagVertex::new(genesis, 0))
                 .expect("genesis insertion should not fail");
+
+            // Create founder allocation (5% of max supply)
+            let founder_key_bytes = hex::decode(rhiza_core::FOUNDER_PUBLIC_KEY)
+                .expect("invalid founder public key");
+            let mut key_arr = [0u8; 32];
+            key_arr.copy_from_slice(&founder_key_bytes);
+            let founder_pubkey = rhiza_core::crypto::PublicKey::from_bytes(key_arr);
+
+            let founder_tx = Transaction::founder_allocation(
+                &self.keypair,
+                founder_pubkey,
+                genesis_id,
+            );
+            info!(
+                "Creating founder allocation: {} RHZ → founder",
+                rhiza_core::FOUNDER_ALLOCATION / rhiza_core::UNITS_PER_RHZ
+            );
+            self.dag
+                .insert(DagVertex::new(founder_tx, 1))
+                .expect("founder allocation insertion should not fail");
         }
     }
 

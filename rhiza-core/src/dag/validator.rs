@@ -24,6 +24,8 @@ pub enum ValidationError {
     InvalidRelayReward,
     #[error("invalid timestamp: {0}")]
     InvalidTimestamp(String),
+    #[error("invalid founder allocation")]
+    InvalidFounderAllocation,
 }
 
 impl TransactionValidator {
@@ -44,6 +46,7 @@ impl TransactionValidator {
             TransactionType::Genesis => Self::validate_genesis(tx, dag),
             TransactionType::Transfer => Self::validate_transfer(tx, dag),
             TransactionType::RelayReward => Self::validate_relay_reward(tx, dag),
+            TransactionType::FounderAllocation => Self::validate_founder_allocation(tx, dag),
         }
     }
 
@@ -107,6 +110,41 @@ impl TransactionValidator {
         let max_reward = crate::BASE_RELAY_REWARD;
         if tx.data.amount > max_reward {
             return Err(ValidationError::InvalidRelayReward);
+        }
+
+        Ok(())
+    }
+
+    fn validate_founder_allocation(tx: &Transaction, dag: &Dag) -> Result<(), ValidationError> {
+        // Founder allocation amount must match protocol constant
+        if tx.data.amount != crate::FOUNDER_ALLOCATION {
+            return Err(ValidationError::InvalidFounderAllocation);
+        }
+
+        // Verify the recipient is the founder
+        let founder_key_bytes = hex::decode(crate::FOUNDER_PUBLIC_KEY)
+            .map_err(|_| ValidationError::InvalidFounderAllocation)?;
+        let mut key_arr = [0u8; 32];
+        key_arr.copy_from_slice(&founder_key_bytes);
+        let expected_founder = crate::crypto::PublicKey::from_bytes(key_arr);
+        if tx.data.recipient != expected_founder {
+            return Err(ValidationError::InvalidFounderAllocation);
+        }
+
+        // Parents must exist
+        for parent in &tx.data.parents {
+            if dag.get(parent).is_none() {
+                return Err(ValidationError::ParentNotFound);
+            }
+        }
+
+        // Only one founder allocation ever
+        for id in dag.transaction_ids() {
+            if let Some(vertex) = dag.get(&id) {
+                if vertex.transaction.data.tx_type == TransactionType::FounderAllocation {
+                    return Err(ValidationError::InvalidFounderAllocation);
+                }
+            }
         }
 
         Ok(())

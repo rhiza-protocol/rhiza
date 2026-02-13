@@ -11,6 +11,8 @@ pub enum TransactionType {
     Genesis,
     /// Relay reward claim
     RelayReward,
+    /// One-time founder allocation at genesis
+    FounderAllocation,
 }
 
 /// The data payload of a transaction (what gets signed)
@@ -83,6 +85,26 @@ impl Transaction {
             memo: Some("Rhiza Genesis — The root of true decentralization".to_string()),
         };
         Transaction::new(data, keypair)
+    }
+
+    /// Create the founder allocation transaction (one-time genesis allocation)
+    pub fn founder_allocation(
+        genesis_keypair: &KeyPair,
+        founder_pubkey: PublicKey,
+        genesis_id: Hash,
+    ) -> Self {
+        let data = TransactionData {
+            tx_type: TransactionType::FounderAllocation,
+            parents: [genesis_id, genesis_id],
+            sender: genesis_keypair.public_key.clone(),
+            recipient: founder_pubkey,
+            amount: crate::FOUNDER_ALLOCATION,
+            fee: 0,
+            timestamp: 0,
+            nonce: 1,
+            memo: Some("Rhiza Founder Allocation — 5% genesis grant".to_string()),
+        };
+        Transaction::new(data, genesis_keypair)
     }
 
     /// Create a transfer transaction
