@@ -2,7 +2,7 @@ use crate::NodeState;
 use axum::{
     extract::State,
     http::StatusCode,
-    response::Json,
+    response::{Html, Json},
     routing::{get, post},
     Router,
 };
@@ -46,10 +46,26 @@ struct TransactionResponse {
     status: String,
 }
 
+/// Transaction list item
+#[derive(Serialize)]
+struct TransactionListItem {
+    id: String,
+    tx_type: String,
+    sender: String,
+    recipient: String,
+    amount: u64,
+    amount_rhz: f64,
+    memo: Option<String>,
+    is_incoming: bool,
+    timestamp: u64,
+}
+
 pub async fn run_api_server(state: SharedState, port: u16) {
     let app = Router::new()
+        .route("/", get(serve_wallet_ui))
         .route("/info", get(get_info))
         .route("/balance", get(get_balance))
+        .route("/transactions", get(get_transactions))
         .route("/send", post(send_transaction))
         .route("/relay-reward", post(claim_relay_reward))
         .route("/dag/tips", get(get_tips))
@@ -59,6 +75,10 @@ pub async fn run_api_server(state: SharedState, port: u16) {
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     tracing::info!("🌐 API server listening on http://{}", addr);
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn serve_wallet_ui() -> Html<&'static str> {
+    Html(include_str!("../static/index.html"))
 }
 
 async fn get_info(State(state): State<SharedState>) -> Json<NodeInfoResponse> {
@@ -84,6 +104,42 @@ async fn get_balance(State(state): State<SharedState>) -> Json<BalanceResponse> 
         balance,
         balance_rhz: balance as f64 / rhiza_core::UNITS_PER_RHZ as f64,
     })
+}
+
+async fn get_transactions(State(state): State<SharedState>) -> Json<Vec<TransactionListItem>> {
+    let state = state.lock().unwrap();
+    let my_pubkey = state.keypair.public_key.to_string();
+
+    let mut txs: Vec<TransactionListItem> = state.dag.transaction_ids().iter().filter_map(|id| {
+        let vertex = state.dag.get(id)?;
+        let tx = &vertex.transaction;
+        let tx_type = match tx.data.tx_type {
+            rhiza_core::dag::transaction::TransactionType::Genesis => "Genesis",
+            rhiza_core::dag::transaction::TransactionType::Transfer => "Transfer",
+            rhiza_core::dag::transaction::TransactionType::RelayReward => "RelayReward",
+            rhiza_core::dag::transaction::TransactionType::FounderAllocation => "FounderAllocation",
+        };
+        let recipient_str = tx.data.recipient.to_string();
+        let sender_str = tx.data.sender.to_string();
+        let is_incoming = recipient_str == my_pubkey && sender_str != my_pubkey;
+
+        Some(TransactionListItem {
+            id: tx.id.to_string(),
+            tx_type: tx_type.to_string(),
+            sender: sender_str,
+            recipient: recipient_str,
+            amount: tx.data.amount,
+            amount_rhz: tx.data.amount as f64 / rhiza_core::UNITS_PER_RHZ as f64,
+            memo: tx.data.memo.clone(),
+            is_incoming,
+            timestamp: tx.data.timestamp,
+        })
+    }).collect();
+
+    // Sort: newest first (by timestamp, then by type for genesis)
+    txs.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
+
+    Json(txs)
 }
 
 async fn send_transaction(
